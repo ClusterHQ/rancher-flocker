@@ -1,11 +1,3 @@
-flocker-control-volume:
-  labels:
-    io.rancher.container.start_once: true
-  image: clusterhq/flocker-control-service
-  command: true
-  volumes:
-  - /var/lib/flocker
-
 flocker-control-service:
   labels:
     io.rancher.sidekicks: flocker-control-volume
@@ -14,8 +6,7 @@ flocker-control-service:
   net: host
   volumes:
   - /etc/flocker:/etc/flocker
-  volumes_from:
-  - flocker-control-volume
+  - /var/lib/flocker:/var/lib/flocker
 
 #docker run --name=flocker-control-volume -v /var/lib/flocker clusterhq/flocker-control-service true
 #docker run --restart=always -d --net=host -v /etc/flocker:/etc/flocker --volumes-from=flocker-control-volume --name=flocker-control-service clusterhq/flocker-control-service
