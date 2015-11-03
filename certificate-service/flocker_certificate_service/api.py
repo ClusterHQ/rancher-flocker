@@ -2,6 +2,7 @@ from twisted.web import server, resource
 from twisted.internet import reactor
 import json
 import os
+import streql
 
 class AgentResource(resource.Resource):
     isLeaf = True
@@ -10,8 +11,11 @@ class AgentResource(resource.Resource):
         return resource.Resource.__init__(self, *args, **kw)
 
     def render_POST(self, request):
-        self.base_url = os.environ.get("BOOTSTRAP_TOKEN")
+        bootstrap_token = os.environ.get("BOOTSTRAP_TOKEN")
         data = json.loads(request.content.read())
+        if streql.equals(data["bootstrap_token"].encode("ascii"), bootstrap_token):
+            # authenticated!
+            pass
 
 class ControlResource(resource.Resource):
     isLeaf = True
