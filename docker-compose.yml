@@ -1,3 +1,12 @@
+flocker-certificate-service:
+  labels:
+    io.rancher.sidekicks: flocker-control-volume
+    io.rancher.scheduler.affinity:host_label: master=true
+  image: clusterhq/flocker-certificate-service:latest
+  net: host
+  volumes:
+  - /var/lib/flocker:/var/lib/flocker
+
 flocker-control-service:
   labels:
     io.rancher.sidekicks: flocker-control-volume
@@ -5,49 +14,35 @@ flocker-control-service:
   image: clusterhq/flocker-control-service:latest
   net: host
   volumes:
-  - /etc/flocker:/etc/flocker
-  - /var/lib/flocker:/var/lib/flocker
+  - /etc/flocker
+  - /var/lib/flocker # XXX need to persist this somewhere
+  links:
+  - flocker-certificate-service
 
 flocker-dataset-agent:
   labels:
     io.rancher.scheduler.global: true
   image: clusterhq/flocker-dataset-agent:latest
   volumes:
-  - /tmp/flocker-command-log:/tmp/flocker-command-log
   - /flocker:/flocker
   - /:/host
-  - /etc/flocker:/etc/flocker
   - /dev:/dev
-  environment:
-    DEBUG: 1
+  - /etc/flocker
   net: host
   privileged: true
   restart: always
+  links:
+  - flocker-certificate-service
 
 flocker-container-agent:
   labels:
     io.rancher.scheduler.global: true
   image: clusterhq/flocker-container-agent:latest
   volumes:
-  - /etc/flocker:/etc/flocker
+  - /etc/flocker
   - /var/run/docker.sock:/var/run/docker.sock
   restart: always
   net: host
   privileged: true
-
-#docker run --name=flocker-control-volume -v /var/lib/flocker clusterhq/flocker-control-service true
-#docker run --restart=always -d --net=host -v /etc/flocker:/etc/flocker --volumes-from=flocker-control-volume --name=flocker-control-service clusterhq/flocker-control-service
-#
-#
-#docker run --restart=always -d --net=host --privileged \\
-#    -v /etc/flocker:/etc/flocker \\
-#    -v /var/run/docker.sock:/var/run/docker.sock \\
-#    --name=flocker-container-agent \\
-#    clusterhq/flocker-container-agent
-#docker run --restart=always -d --net=host --privileged \\
-#    -e DEBUG=1 \\
-#    -v /tmp/flocker-command-log:/tmp/flocker-command-log \\
-#    -v /flocker:/flocker -v /:/host -v /etc/flocker:/etc/flocker \\
-#    -v /dev:/dev \\
-#    --name=flocker-dataset-agent \\
-#    clusterhq/flocker-dataset-agent
+  links:
+  - flocker-certificate-service
