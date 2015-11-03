@@ -1,4 +1,4 @@
-a fairly insecure API server which hands out everything you need to run flocker.
+an API server which hands out everything you need to run flocker.
 to new flocker agents based on a shared secret, which must match one specified
 in an environment variable `BOOTSTRAP_TOKEN`.
 
@@ -12,7 +12,7 @@ in an environment variable `BOOTSTRAP_TOKEN`.
   * there will be precisely one control service certificate generated; it can
     be fetched multiple times
 
-* post /v1/agent
+* POST /v1/agent
 
   * request data:  `{"bootstrap_token": "a quick brown fox",
                      "host_uuid": "abc"}`
