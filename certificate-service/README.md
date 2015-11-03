@@ -28,3 +28,5 @@ in an environment variable `BOOTSTRAP_TOKEN`.
 * as an agent, it is then your job to write these into files which, from
   container agent's pov, are in `/etc/flocker`.  attempt to write these files
   atomically.
+
+TODO: use https://pypi.python.org/pypi/streql/3.0.2 for string comparison
